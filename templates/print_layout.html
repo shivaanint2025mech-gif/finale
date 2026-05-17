@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>{{ event.title }}</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 40px; }
+        h2 { color: #333; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
+        td, th { border: 1px solid #ddd; padding: 8px; }
+        img { max-width: 200px; height: auto; }
+    </style>
+</head>
+<body>
+    <h2>{{ event.title }}</h2>
+    <p><strong>Academic Year:</strong> {{ event.academic_year }}</p>
+    <p><strong>Semester:</strong> {{ event.semester }}</p>
+    <p><strong>Event Type:</strong> {{ event.event_type }}{% if event.other_event_type %} ({{ event.other_event_type }}){% endif %}</p>
+    <p><strong>Date:</strong> {{ event.start_date }} to {{ event.end_date }}</p>
+    <p><strong>Time:</strong> {{ event.start_time }} - {{ event.end_time }}</p>
+    <p><strong>Duration:</strong> {{ event.duration }}</p>
+    <p><strong>Venue:</strong> {{ event.venue }}</p>
+    <p><strong>Coordinator:</strong> {{ event.coordinator_name }} | {{ event.coordinator_email }} | {{ event.coordinator_contact }}</p>
+    <p><strong>Batch:</strong> {{ event.batch }}</p>
+    <p><strong>Chief Guest:</strong> {{ event.chief_guest_name }}, {{ event.chief_guest_designation }}, {{ event.chief_guest_institution }}</p>
+    {% if event.chief_guest_url %}<p><strong>Profile URL:</strong> {{ event.chief_guest_url }}</p>{% endif %}
+
+    {% if event.flier_filename %}
+    <p><strong>Flier:</strong><br><img src="{{ url_for('uploaded_file', filename=event.flier_filename, _external=True) }}" alt="Flier"></p>
+    {% endif %}
+
+    {% if event.permission_filename %}
+    <p><strong>Permission Letter:</strong><br>
+    {% if event.permission_filename.lower().endswith(('png','jpg','jpeg')) %}
+        <img src="{{ url_for('uploaded_file', filename=event.permission_filename, _external=True) }}" alt="Permission Letter">
+    {% else %}
+        [Attached PDF] {{ event.permission_filename }}
+    {% endif %}
+    </p>
+    {% endif %}
+
+    {% if event.chief_guest_profile_filename %}
+    <p><strong>Chief Guest Profile:</strong> <img src="{{ url_for('uploaded_file', filename=event.chief_guest_profile_filename, _external=True) }}" style="max-width:150px;"></p>
+    {% endif %}
+</body>
+</html>

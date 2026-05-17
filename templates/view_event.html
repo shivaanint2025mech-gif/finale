@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block body_content %}
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#"><i class="fa-solid fa-eye me-2"></i>Event Details</a>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-outline-grad btn-sm"><i class="fa-solid fa-arrow-left me-1"></i>Back</a>
+  </div>
+</nav>
+
+<div class="container py-4">
+    <div class="glass-card p-4">
+        <h2 class="fw-bold">{{ event.title }}</h2>
+        <span class="badge bg-gradient-primary text-white px-3 py-2 rounded-pill">{{ event.event_type }}{% if event.other_event_type %} - {{ event.other_event_type }}{% endif %}</span>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <p><i class="fa-solid fa-calendar me-2 text-muted"></i><strong>Dates:</strong> {{ event.start_date }} to {{ event.end_date }}</p>
+                <p><i class="fa-solid fa-clock me-2 text-muted"></i><strong>Time:</strong> {{ event.start_time }} - {{ event.end_time }} | Duration: {{ event.duration }}</p>
+                <p><i class="fa-solid fa-location-dot me-2 text-muted"></i><strong>Venue:</strong> {{ event.venue }}</p>
+                <p><i class="fa-solid fa-user-tie me-2 text-muted"></i><strong>Coordinator:</strong> {{ event.coordinator_name }}<br>
+                <small>{{ event.coordinator_email }} | {{ event.coordinator_contact }}</small></p>
+                <p><i class="fa-solid fa-users me-2 text-muted"></i><strong>Batch:</strong> {{ event.batch }}</p>
+            </div>
+            <div class="col-md-6">
+                <div class="p-3 bg-light rounded-4">
+                    <h5><i class="fa-solid fa-star me-2"></i>Chief Guest</h5>
+                    <p class="mb-1"><strong>{{ event.chief_guest_name }}</strong></p>
+                    <p class="mb-1">{{ event.chief_guest_designation }}</p>
+                    <p class="mb-1">{{ event.chief_guest_institution }}</p>
+                    {% if event.chief_guest_url %}<a href="{{ event.chief_guest_url }}" target="_blank" class="btn btn-sm btn-outline-primary mt-2">Profile Link</a>{% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            {% if event.flier_filename %}
+            <div class="col-md-6">
+                <p><strong>Flier:</strong> <a href="{{ url_for('uploaded_file', filename=event.flier_filename) }}" target="_blank" class="btn btn-sm btn-outline-secondary">View</a></p>
+            </div>
+            {% endif %}
+            {% if event.permission_filename %}
+            <div class="col-md-6">
+                <p><strong>Permission Letter:</strong> <a href="{{ url_for('uploaded_file', filename=event.permission_filename) }}" target="_blank" class="btn btn-sm btn-outline-secondary">View</a></p>
+            </div>
+            {% endif %}
+        </div>
+
+        <hr>
+        <div class="d-flex flex-wrap gap-2">
+            {% if session.role == 'faculty' %}
+                <a href="{{ url_for('show_participants', event_id=event.id) }}" class="btn btn-outline-grad"><i class="fa-solid fa-list me-1"></i>Show Students</a>
+                <a href="{{ url_for('send_feedback', event_id=event.id) }}" class="btn btn-outline-grad"><i class="fa-solid fa-paper-plane me-1"></i>Send Feedback</a>
+                <a href="{{ url_for('print_event', event_id=event.id) }}" class="btn btn-grad"><i class="fa-solid fa-print me-1"></i>Download PDF</a>
+            {% else %}
+                <a href="{{ url_for('give_feedback', event_id=event.id) }}" class="btn btn-grad"><i class="fa-solid fa-comment me-1"></i>Give Feedback</a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

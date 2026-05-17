@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block body_content %}
+<div class="container d-flex align-items-center justify-content-center" style="min-height:100vh;">
+    <div class="col-md-5">
+        <div class="glass-card p-5">
+            <h3 class="fw-bold mb-4"><i class="fa-solid fa-star-half-stroke me-2"></i>Feedback for {{ event.title }}</h3>
+            <form method="POST">
+                <div class="mb-3">
+                    <label>Rating (1-5)</label>
+                    <input type="number" name="rating" min="1" max="5" class="form-control" required>
+                </div>
+                <div class="mb-3">
+                    <label>Comments</label>
+                    <textarea name="comments" class="form-control" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn btn-grad w-100">Submit Feedback</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

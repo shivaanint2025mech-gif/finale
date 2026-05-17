@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block body_content %}
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#"><i class="fa-solid fa-graduation-cap me-2"></i>EventHub</a>
+    <div class="d-flex align-items-center gap-3">
+        <span class="fw-semibold">{{ session.name }}</span>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-grad btn-sm">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container py-5">
+    <div class="dashboard-header">
+        <h4 class="fw-bold">📚 Upcoming Events for Batch {{ joining_year }}</h4>
+    </div>
+
+    {% if events %}
+    <div class="event-grid">
+        {% for ev in events %}
+        <div class="event-card">
+            <div class="icon-circle"><i class="fa-solid fa-bullhorn"></i></div>
+            <h5 class="fw-bold">{{ ev.title }}</h5>
+            <p class="text-muted mb-1"><i class="fa-regular fa-calendar me-1"></i>{{ ev.start_date }}</p>
+            <p class="text-muted mb-3"><i class="fa-solid fa-map-pin me-1"></i>{{ ev.venue }}</p>
+            <a href="{{ url_for('view_event', event_id=ev.id) }}" class="btn btn-outline-grad btn-sm w-100">View Details</a>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fa-solid fa-calendar-xmark fs-1 text-muted"></i>
+        <p>No events for your batch right now.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

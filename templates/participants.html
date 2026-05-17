@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block body_content %}
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand"><i class="fa-solid fa-users me-2"></i>Participants</a>
+    <a href="{{ url_for('view_event', event_id=event.id) }}" class="btn btn-outline-grad btn-sm">Back to Event</a>
+  </div>
+</nav>
+
+<div class="container py-4">
+    <div class="glass-card p-4">
+        <h4 class="fw-bold mb-3">{{ event.title }} (Batch {{ event.batch }})</h4>
+        <div class="table-responsive">
+            {{ participants.to_html(classes='table table-hover align-middle', index=False) | safe }}
+        </div>
+    </div>
+</div>
+{% endblock %}

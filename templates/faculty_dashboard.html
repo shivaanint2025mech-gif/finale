@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block body_content %}
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#"><i class="fa-solid fa-chalkboard-user me-2"></i>EventHub</a>
+    <div class="d-flex align-items-center gap-3">
+        <span class="fw-semibold">{{ session.name }}</span>
+        <a href="{{ url_for('logout') }}" class="btn btn-outline-grad btn-sm">Logout</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container py-5">
+    <div class="dashboard-header">
+        <h4 class="fw-bold">📋 My Events</h4>
+        <a href="{{ url_for('create_event') }}" class="btn btn-grad"><i class="fa-solid fa-plus me-2"></i>New Event</a>
+    </div>
+
+    {% if events %}
+    <div class="event-grid">
+        {% for ev in events %}
+        <div class="event-card">
+            <div class="icon-circle"><i class="fa-solid fa-calendar-star"></i></div>
+            <h5 class="fw-bold">{{ ev.title }}</h5>
+            <p class="text-muted mb-1"><i class="fa-regular fa-calendar me-1"></i>{{ ev.start_date }} - {{ ev.end_date }}</p>
+            <p class="text-muted mb-3"><i class="fa-solid fa-users me-1"></i>{{ ev.batch }}</p>
+            <div class="d-flex gap-2">
+                <a href="{{ url_for('view_event', event_id=ev.id) }}" class="btn btn-outline-grad btn-sm flex-grow-1">View</a>
+                <a href="{{ url_for('print_event', event_id=ev.id) }}" class="btn btn-grad btn-sm flex-grow-1"><i class="fa-solid fa-print me-1"></i>PDF</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <i class="fa-solid fa-folder-open fs-1 text-muted"></i>
+        <p class="mt-3">No events yet. Create your first event!</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
