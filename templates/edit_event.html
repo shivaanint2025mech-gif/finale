@@ -1,0 +1,234 @@
+{% extends "base.html" %}
+{% block body_content %}
+<nav class="navbar navbar-expand-lg navbar-custom sticky-top mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="#"><i class="fa-solid fa-pen-to-square me-2"></i>Edit Event</a>
+    <a href="{{ url_for('view_event', event_id=event.id) }}" class="btn btn-outline-grad btn-sm">Cancel</a>
+  </div>
+</nav>
+
+<div class="container py-3">
+    <div class="glass-card p-4">
+        <h3 class="fw-bold mb-4"><i class="fa-solid fa-pencil me-2"></i>Edit Event</h3>
+        <form method="POST" enctype="multipart/form-data">
+            <div class="accordion" id="eventFormAccordion">
+                <!-- Section 1: Basic Info -->
+                <div class="accordion-item mb-3" style="border-radius:15px; overflow:hidden;">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#basicInfo">
+                            <i class="fa-solid fa-info-circle me-2"></i> Basic Information
+                        </button>
+                    </h2>
+                    <div id="basicInfo" class="accordion-collapse collapse show">
+                        <div class="accordion-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>Academic Year</label>
+                                    <select name="academic_year" class="form-select" required>
+                                        <option value="25-26" {% if event.academic_year == '25-26' %}selected{% endif %}>25-26</option>
+                                        <option value="26-27" {% if event.academic_year == '26-27' %}selected{% endif %}>26-27</option>
+                                        <option value="27-28" {% if event.academic_year == '27-28' %}selected{% endif %}>27-28</option>
+                                        <option value="28-29" {% if event.academic_year == '28-29' %}selected{% endif %}>28-29</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Semester</label>
+                                    <select name="semester" class="form-select" required>
+                                        <option value="odd" {% if event.semester == 'odd' %}selected{% endif %}>Odd</option>
+                                        <option value="even" {% if event.semester == 'even' %}selected{% endif %}>Even</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Event Type</label>
+                                    <select name="event_type" id="event_type" class="form-select" required>
+                                        <option value="FDP" {% if event.event_type == 'FDP' %}selected{% endif %}>FDP</option>
+                                        <option value="guest lecture" {% if event.event_type == 'guest lecture' %}selected{% endif %}>Guest Lecture</option>
+                                        <option value="conference" {% if event.event_type == 'conference' %}selected{% endif %}>Conference</option>
+                                        <option value="workshop" {% if event.event_type == 'workshop' %}selected{% endif %}>Workshop</option>
+                                        <option value="value added course" {% if event.event_type == 'value added course' %}selected{% endif %}>Value Added Course</option>
+                                        <option value="training program" {% if event.event_type == 'training program' %}selected{% endif %}>Training Program</option>
+                                        <option value="hands on session" {% if event.event_type == 'hands on session' %}selected{% endif %}>Hands on Session</option>
+                                        <option value="others" {% if event.event_type == 'others' %}selected{% endif %}>Others</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6" id="other_type_div" style="{% if event.event_type != 'others' %}display:none;{% endif %}">
+                                    <label>Specify Other</label>
+                                    <input name="other_event_type" class="form-control" value="{{ event.other_event_type or '' }}">
+                                </div>
+                                <div class="col-12">
+                                    <label>Title of the Event</label>
+                                    <input name="title" class="form-control" value="{{ event.title or '' }}" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 2: Date & Venue -->
+                <div class="accordion-item mb-3" style="border-radius:15px; overflow:hidden;">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#dateVenue">
+                            <i class="fa-solid fa-calendar-days me-2"></i> Date, Time & Venue
+                        </button>
+                    </h2>
+                    <div id="dateVenue" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>Start Date</label>
+                                    <input type="date" name="start_date" class="form-control" value="{{ event.start_date or '' }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>End Date</label>
+                                    <input type="date" name="end_date" class="form-control" value="{{ event.end_date or '' }}" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Start Time</label>
+                                    <input type="time" name="start_time" class="form-control" value="{{ event.start_time or '' }}" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>End Time</label>
+                                    <input type="time" name="end_time" class="form-control" value="{{ event.end_time or '' }}" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Duration (HH:MM)</label>
+                                    <input name="duration" class="form-control" value="{{ event.duration or '' }}" required>
+                                </div>
+                                <div class="col-12">
+                                    <label>Venue</label>
+                                    <input name="venue" class="form-control" value="{{ event.venue or '' }}" required>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 3: Coordinator & Participants -->
+                <div class="accordion-item mb-3" style="border-radius:15px; overflow:hidden;">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#coordinator">
+                            <i class="fa-solid fa-user-tie me-2"></i> Coordinator & Participants
+                        </button>
+                    </h2>
+                    <div id="coordinator" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>Coordinator Name</label>
+                                    <input name="coordinator_name" class="form-control" value="{{ event.coordinator_name or '' }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Contact Details</label>
+                                    <input name="coordinator_contact" class="form-control" value="{{ event.coordinator_contact or '' }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Coordinator Email</label>
+                                    <input type="email" name="coordinator_email" class="form-control" value="{{ event.coordinator_email or '' }}" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Batch</label>
+                                    <select name="batch" class="form-select" required>
+                                        <option value="21-25" {% if event.batch == '21-25' %}selected{% endif %}>21-25</option>
+                                        <option value="22-26" {% if event.batch == '22-26' %}selected{% endif %}>22-26</option>
+                                        <option value="23-27" {% if event.batch == '23-27' %}selected{% endif %}>23-27</option>
+                                        <option value="24-28" {% if event.batch == '24-28' %}selected{% endif %}>24-28</option>
+                                        <option value="25-29" {% if event.batch == '25-29' %}selected{% endif %}>25-29</option>
+                                        <option value="26-30" {% if event.batch == '26-30' %}selected{% endif %}>26-30</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 4: Chief Guest -->
+                <div class="accordion-item mb-3" style="border-radius:15px; overflow:hidden;">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#chiefGuest">
+                            <i class="fa-solid fa-star me-2"></i> Chief Guest Details
+                        </button>
+                    </h2>
+                    <div id="chiefGuest" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="row g-3">
+                                <div class="col-md-4">
+                                    <label>Name</label>
+                                    <input name="chief_guest_name" class="form-control" value="{{ event.chief_guest_name or '' }}" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Designation</label>
+                                    <input name="chief_guest_designation" class="form-control" value="{{ event.chief_guest_designation or '' }}" required>
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Industry/Institution</label>
+                                    <input name="chief_guest_institution" class="form-control" value="{{ event.chief_guest_institution or '' }}" required>
+                                </div>
+                                <div class="col-md-8">
+                                    <label>Profile URL (optional)</label>
+                                    <input name="chief_guest_url" class="form-control" value="{{ event.chief_guest_url or '' }}">
+                                </div>
+                                <div class="col-md-4">
+                                    <label>Upload Profile (PDF/Image)</label>
+                                    <input type="file" name="chief_guest_profile" class="form-control">
+                                    {% if event.chief_guest_profile_filename %}
+                                        <small class="text-muted">Current: {{ event.chief_guest_profile_filename }}</small>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Section 5: Uploads & Feedback Form -->
+                <div class="accordion-item mb-3" style="border-radius:15px; overflow:hidden;">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#uploads">
+                            <i class="fa-solid fa-upload me-2"></i> Uploads & Feedback Form
+                        </button>
+                    </h2>
+                    <div id="uploads" class="accordion-collapse collapse">
+                        <div class="accordion-body">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label>Upload Flier (Image/PDF)</label>
+                                    <input type="file" name="flier" class="form-control">
+                                    {% if event.flier_filename %}
+                                        <small class="text-muted">Current: {{ event.flier_filename }}</small>
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-6">
+                                    <label>Upload Permission Letter (PDF/Image)</label>
+                                    <input type="file" name="permission_letter" class="form-control">
+                                    {% if event.permission_filename %}
+                                        <small class="text-muted">Current: {{ event.permission_filename }}</small>
+                                    {% endif %}
+                                </div>
+                                <div class="col-12">
+                                    <label>Feedback Form Link (Google Form, etc.)</label>
+                                    <input name="feedback_form_link" class="form-control" value="{{ event.feedback_form_link or '' }}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-end mt-4">
+                <button type="submit" class="btn btn-grad btn-lg"><i class="fa-solid fa-save me-2"></i>Update Event</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Show/hide other event type
+    document.getElementById('event_type').addEventListener('change', function(){
+        var otherDiv = document.getElementById('other_type_div');
+        if (this.value === 'others') {
+            otherDiv.style.display = 'block';
+        } else {
+            otherDiv.style.display = 'none';
+        }
+    });
+</script>
+{% endblock %}
