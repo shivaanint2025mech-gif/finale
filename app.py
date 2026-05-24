@@ -1,3 +1,4 @@
+import io
 import os
 import pandas as pd
 from datetime import datetime
@@ -10,7 +11,7 @@ from weasyprint import HTML
 import sqlite3
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'hardcoded-dev-key-12345'   # fixed secret key
+app.config['SECRET_KEY'] = '63814764a5d5c495ad067d844e3bae31'   # fixed secret key
 
 # Email mocking – no real SMTP, just prints to terminal
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -112,8 +113,37 @@ def preload_faculty():
             print("Could not preload faculty:", e)
     conn.close()
 
+def preload_students():
+    conn = get_db()
+    # Check if there are already students in the database
+    cur = conn.execute("SELECT COUNT(*) FROM users WHERE role='student'")
+    if cur.fetchone()[0] == 0:
+        try:
+            # Make sure this filename perfectly matches the one in your folder!
+            df = pd.read_excel('student details.xlsx')
+            for _, row in df.iterrows():
+                # Assuming your Excel file has a column named 'email'
+                email = str(row.get('email', '')).strip().lower()
+                
+                # Skip empty rows
+                if email and email != 'nan':
+                    existing = conn.execute("SELECT id FROM users WHERE email=?", (email,)).fetchone()
+                    if not existing:
+                        # Set a default password for students
+                        hashed = generate_password_hash('student123')
+                        name = str(row.get('name', '')) # Change 'name' if your column header is different
+                        
+                        conn.execute("INSERT INTO users (email, password, role, name) VALUES (?,?,?,?)",
+                                     (email, hashed, 'student', name))
+            conn.commit()
+            print("Students preloaded successfully.")
+        except Exception as e:
+            print("Could not preload students:", e)
+    conn.close()
+
 init_db()
 preload_faculty()
+preload_students()
 
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
@@ -243,10 +273,10 @@ def dashboard():
         student_email = session['email']
         joining_year = None
         try:
-            df = pd.read_excel('student detail.xlsx')
+            df = pd.read_excel('student details.xlsx')
             student_row = df[df['email'].str.strip().str.lower() == student_email]
             if not student_row.empty:
-                joining_year = int(student_row.iloc[0]['joining year'])
+                joining_year = int(student_row.iloc[0]['Joining Year'])
         except Exception as e:
             print("Student detail error:", e)
         conn = get_db()
@@ -338,10 +368,10 @@ def view_event(event_id):
         return redirect(url_for('dashboard'))
     if session['role'] == 'student':
         student_email = session['email']
-        df = pd.read_excel('student detail.xlsx')
+        df = pd.read_excel('student details.xlsx')
         student_row = df[df['email'].str.strip().str.lower() == student_email]
         if not student_row.empty:
-            joining_year = int(student_row.iloc[0]['joining year'])
+            joining_year = int(student_row.iloc[0]['Joining year'])
             batch_start = int('20' + event['batch'].split('-')[0])
             if joining_year != batch_start:
                 flash('You are not a participant of this event.', 'danger')
@@ -362,8 +392,8 @@ def show_participants(event_id):
         return redirect(url_for('dashboard'))
     batch = event['batch']  # e.g. "22-26"
     start_year = int('20' + batch.split('-')[0])  # 2022
-    df = pd.read_excel('student detail.xlsx')
-    participants = df[df['joining year'] == start_year]
+    df = pd.read_excel('student details.xlsx')
+    participants = df[df['Joining year'] == start_year]
     return render_template('participants.html', event=event, participants=participants)
 
 @app.route('/event/<int:event_id>/send_feedback')
@@ -377,8 +407,8 @@ def send_feedback(event_id):
         return redirect(url_for('dashboard'))
     batch = event['batch']
     start_year = int('20' + batch.split('-')[0])
-    df = pd.read_excel('student detail.xlsx')
-    participants = df[df['joining year'] == start_year]
+    df = pd.read_excel('student details.xlsx')
+    participants = df[df['Joining year'] == start_year]
     emails = participants['email'].dropna().tolist()
     feedback_link = url_for('give_feedback', event_id=event_id, _external=True)
     success_count = 0
